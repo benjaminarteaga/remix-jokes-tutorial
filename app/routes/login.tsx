@@ -1,21 +1,19 @@
-import type { ActionFunction, LinksFunction } from "remix";
-import {
-  useActionData,
-  json,
-  Link,
-  useSearchParams,
-} from "remix";
+import { ActionFunction, Form, LinksFunction, MetaFunction } from "remix";
+import { useActionData, json, useSearchParams, Link } from "remix";
 
 import { db } from "~/utils/db.server";
-import {
-  createUserSession,
-  login,
-  register,
-} from "~/utils/session.server";
+import { createUserSession, login, register } from "~/utils/session.server";
 import stylesUrl from "~/styles/login.css";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: stylesUrl }];
+};
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Remix Jokes | Login",
+    description: "Login to submit your own jokes to Remix Jokes!",
+  };
 };
 
 function validateUsername(username: unknown) {
@@ -43,12 +41,9 @@ type ActionData = {
   };
 };
 
-const badRequest = (data: ActionData) =>
-  json(data, { status: 400 });
+const badRequest = (data: ActionData) => json(data, { status: 400 });
 
-export const action: ActionFunction = async ({
-  request,
-}) => {
+export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
   const loginType = form.get("loginType");
   const username = form.get("username");
@@ -76,7 +71,6 @@ export const action: ActionFunction = async ({
   switch (loginType) {
     case "login": {
       const user = await login({ username, password });
-
       if (!user) {
         return badRequest({
           fields,
@@ -120,18 +114,14 @@ export default function Login() {
     <div className="container">
       <div className="content" data-light="">
         <h1>Login</h1>
-        <form method="post">
+        <Form method="post">
           <input
             type="hidden"
             name="redirectTo"
-            value={
-              searchParams.get("redirectTo") ?? undefined
-            }
+            value={searchParams.get("redirectTo") ?? undefined}
           />
           <fieldset>
-            <legend className="sr-only">
-              Login or Register?
-            </legend>
+            <legend className="sr-only">Login or Register?</legend>
             <label>
               <input
                 type="radio"
@@ -149,10 +139,7 @@ export default function Login() {
                 type="radio"
                 name="loginType"
                 value="register"
-                defaultChecked={
-                  actionData?.fields?.loginType ===
-                  "register"
-                }
+                defaultChecked={actionData?.fields?.loginType === "register"}
               />{" "}
               Register
             </label>
@@ -164,13 +151,9 @@ export default function Login() {
               id="username-input"
               name="username"
               defaultValue={actionData?.fields?.username}
-              aria-invalid={Boolean(
-                actionData?.fieldErrors?.username
-              )}
+              aria-invalid={Boolean(actionData?.fieldErrors?.username)}
               aria-errormessage={
-                actionData?.fieldErrors?.username
-                  ? "username-error"
-                  : undefined
+                actionData?.fieldErrors?.username ? "username-error" : undefined
               }
             />
             {actionData?.fieldErrors?.username ? (
@@ -191,14 +174,10 @@ export default function Login() {
               defaultValue={actionData?.fields?.password}
               type="password"
               aria-invalid={
-                Boolean(
-                  actionData?.fieldErrors?.password
-                ) || undefined
+                Boolean(actionData?.fieldErrors?.password) || undefined
               }
               aria-errormessage={
-                actionData?.fieldErrors?.password
-                  ? "password-error"
-                  : undefined
+                actionData?.fieldErrors?.password ? "password-error" : undefined
               }
             />
             {actionData?.fieldErrors?.password ? (
@@ -213,10 +192,7 @@ export default function Login() {
           </div>
           <div id="form-error-message">
             {actionData?.formError ? (
-              <p
-                className="form-validation-error"
-                role="alert"
-              >
+              <p className="form-validation-error" role="alert">
                 {actionData.formError}
               </p>
             ) : null}
@@ -224,7 +200,7 @@ export default function Login() {
           <button type="submit" className="button">
             Submit
           </button>
-        </form>
+        </Form>
       </div>
       <div className="links">
         <ul>
