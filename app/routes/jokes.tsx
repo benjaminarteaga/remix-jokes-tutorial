@@ -1,10 +1,10 @@
 import type { User } from "@prisma/client";
 import type { LinksFunction, LoaderFunction } from "remix";
-import { Outlet, Link, json, useLoaderData } from "remix";
+import { json, Link, Outlet, useLoaderData } from "remix";
 
-import stylesUrl from "~/styles/jokes.css";
 import { db } from "~/utils/db.server";
 import { getUser } from "~/utils/session.server";
+import stylesUrl from "~/styles/jokes.css";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: stylesUrl }];
@@ -81,3 +81,5 @@ export default function JokesRoute() {
     </div>
   );
 }
+
+export function CatchBoundary() {}

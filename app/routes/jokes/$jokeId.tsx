@@ -14,9 +14,7 @@ import { requireUserId } from "~/utils/session.server";
 
 type LoaderData = { joke: Joke };
 
-export const loader: LoaderFunction = async ({
-  params,
-}) => {
+export const loader: LoaderFunction = async ({ params }) => {
   const joke = await db.joke.findUnique({
     where: { id: params.jokeId },
   });
@@ -29,16 +27,12 @@ export const loader: LoaderFunction = async ({
   return json(data);
 };
 
-export const action: ActionFunction = async ({
-  request,
-  params,
-}) => {
+export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
   if (form.get("_method") !== "delete") {
-    throw new Response(
-      `The _method ${form.get("_method")} is not supported`,
-      { status: 400 }
-    );
+    throw new Response(`The _method ${form.get("_method")} is not supported`, {
+      status: 400,
+    });
   }
   const userId = await requireUserId(request);
   const joke = await db.joke.findUnique({
@@ -50,12 +44,9 @@ export const action: ActionFunction = async ({
     });
   }
   if (joke.jokesterId !== userId) {
-    throw new Response(
-      "Pssh, nice try. That's not your joke",
-      {
-        status: 401,
-      }
-    );
+    throw new Response("Pssh, nice try. That's not your joke", {
+      status: 401,
+    });
   }
   await db.joke.delete({ where: { id: params.jokeId } });
   return redirect("/jokes");
@@ -70,11 +61,7 @@ export default function JokeRoute() {
       <p>{data.joke.content}</p>
       <Link to=".">{data.joke.name} Permalink</Link>
       <form method="post">
-        <input
-          type="hidden"
-          name="_method"
-          value="delete"
-        />
+        <input type="hidden" name="_method" value="delete" />
         <button type="submit" className="button">
           Delete
         </button>
@@ -115,7 +102,6 @@ export function CatchBoundary() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error);
   const { jokeId } = useParams();
   return (
     <div className="error-container">{`There was an error loading joke by the id ${jokeId}. Sorry.`}</div>
